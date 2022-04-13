@@ -9,5 +9,4 @@ public class ImoocFlashSaleApplication {
     public static void main(String[] args) {
         SpringApplication.run(ImoocFlashSaleApplication.class, args);
     }
-
 }
