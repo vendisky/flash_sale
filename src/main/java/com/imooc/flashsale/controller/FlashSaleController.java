@@ -1,14 +1,14 @@
 package com.imooc.flashsale.controller;
 
 import com.imooc.flashsale.domain.FlashSaleOrder;
-import com.imooc.flashsale.domain.User;
 import com.imooc.flashsale.domain.OrderInfo;
+import com.imooc.flashsale.domain.User;
 import com.imooc.flashsale.redis.RedisService;
 import com.imooc.flashsale.result.CodeMsg;
 import com.imooc.flashsale.service.FlashSaleService;
-import com.imooc.flashsale.service.UserService;
 import com.imooc.flashsale.service.GoodsService;
 import com.imooc.flashsale.service.OrderService;
+import com.imooc.flashsale.service.UserService;
 import com.imooc.flashsale.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +30,7 @@ public class FlashSaleController {
 
     @Autowired FlashSaleService flashSaleService;
 
+    /** QPS： 4041 Threads: 5000*10 */
     @RequestMapping("/do_flashsale")
     public String list(Model model, User user, @RequestParam("goodsId") long goodsId) {
         model.addAttribute("user", user);
