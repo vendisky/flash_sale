@@ -26,7 +26,17 @@ public class UserService {
     @Autowired private RedisService redisService;
 
     public User getById(long id) {
-        return userDao.getById(id);
+        // 取缓存
+        User user = redisService.get(UserKey.getById, "" + id, User.class);
+        if (user != null) {
+            return user;
+        }
+        // 取数据库
+        user = userDao.getById(id);
+        if (user != null) {
+            redisService.set(UserKey.getById, "" + id, user);
+        }
+        return user;
     }
 
     public User getByToken(HttpServletResponse response, String token) {
