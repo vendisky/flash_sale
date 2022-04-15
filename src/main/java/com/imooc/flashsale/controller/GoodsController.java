@@ -3,8 +3,10 @@ package com.imooc.flashsale.controller;
 import com.imooc.flashsale.domain.User;
 import com.imooc.flashsale.redis.GoodsKey;
 import com.imooc.flashsale.redis.RedisService;
+import com.imooc.flashsale.result.Result;
 import com.imooc.flashsale.service.GoodsService;
 import com.imooc.flashsale.service.UserService;
+import com.imooc.flashsale.vo.GoodsDetailVo;
 import com.imooc.flashsale.vo.GoodsVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class GoodsController {
     @Autowired ThymeleafViewResolver thymeleafViewResolver;
 
     /** QPS： 15206 Threads: 5000*10 */
-    @RequestMapping("/to_list")
+    @RequestMapping(value = "/to_list", produces = "text/html")
     @ResponseBody
     public String list(
             HttpServletRequest request, HttpServletResponse response, Model model, User user) {
@@ -62,17 +64,18 @@ public class GoodsController {
         return html;
     }
 
-    @RequestMapping("/to_detail/{goodsId}")
-    public String detail(Model model, User user, @PathVariable("goodsId") long goodsId) {
-        model.addAttribute("user", user);
-
+    @RequestMapping(value = "/detail/{goodsId}")
+    @ResponseBody
+    public Result<GoodsDetailVo> detail(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Model model,
+            User user,
+            @PathVariable("goodsId") long goodsId) {
         GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
-        model.addAttribute("goods", goods);
-
         long startAt = goods.getStartDate().getTime();
         long endAt = goods.getEndDate().getTime();
         long now = System.currentTimeMillis();
-
         int flashsaleStatus = 0;
         int remainSeconds = 0;
         if (now < startAt) { // 秒杀还没开始，倒计时
@@ -85,8 +88,11 @@ public class GoodsController {
             flashsaleStatus = 1;
             remainSeconds = 0;
         }
-        model.addAttribute("flashsaleStatus", flashsaleStatus);
-        model.addAttribute("remainSeconds", remainSeconds);
-        return "goods_detail";
+        GoodsDetailVo vo = new GoodsDetailVo();
+        vo.setGoods(goods);
+        vo.setUser(user);
+        vo.setRemainSeconds(remainSeconds);
+        vo.setFlashsaleStatus(flashsaleStatus);
+        return Result.success(vo);
     }
 }
