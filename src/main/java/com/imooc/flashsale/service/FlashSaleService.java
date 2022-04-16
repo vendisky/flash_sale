@@ -17,8 +17,12 @@ public class FlashSaleService {
     @Transactional
     public OrderInfo flashsale(User user, GoodsVo goods) {
         // 减库存 下订单 写入秒杀订单
-        goodsService.reduceStock(goods);
-        // order_info
-        return orderService.createOrder(user, goods);
+        boolean success = goodsService.reduceStock(goods);
+        if (success) {
+            // order_info
+            return orderService.createOrder(user, goods);
+        } else {
+            return null;
+        }
     }
 }

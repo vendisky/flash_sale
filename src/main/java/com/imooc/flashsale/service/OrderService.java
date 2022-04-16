@@ -4,6 +4,8 @@ import com.imooc.flashsale.dao.OrderDao;
 import com.imooc.flashsale.domain.FlashSaleOrder;
 import com.imooc.flashsale.domain.OrderInfo;
 import com.imooc.flashsale.domain.User;
+import com.imooc.flashsale.redis.OrderKey;
+import com.imooc.flashsale.redis.RedisService;
 import com.imooc.flashsale.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,18 @@ public class OrderService {
 
     @Autowired OrderDao orderDao;
 
+    @Autowired RedisService redisService;
+
     public FlashSaleOrder getFlashSaleOrderByUserIdGoodsId(long userId, long goodsId) {
-        return orderDao.getFlashSaleOrderByUserIdGoodsId(userId, goodsId);
+        // return orderDao.getFlashSaleOrderByUserIdGoodsId(userId, goodsId);
+        return redisService.get(
+                OrderKey.getFlashSaleOrderByUidGid,
+                "" + userId + "_" + goodsId,
+                FlashSaleOrder.class);
+    }
+
+    public OrderInfo getOrderById(long orderId) {
+        return orderDao.getOrderById(orderId);
     }
 
     @Transactional
@@ -38,6 +50,12 @@ public class OrderService {
         flashSaleOrder.setOrderId(orderId);
         flashSaleOrder.setUserId(user.getId());
         orderDao.insertFlashSaleOrder(flashSaleOrder);
+
+        redisService.set(
+                OrderKey.getFlashSaleOrderByUidGid,
+                "" + user.getId() + "_" + goods.getId(),
+                flashSaleOrder);
+
         return orderInfo;
     }
 }
