@@ -44,10 +44,10 @@ public class OrderService {
         orderInfo.setOrderChannel(1);
         orderInfo.setStatus(0);
         orderInfo.setUserId(user.getId());
-        long orderId = orderDao.insert(orderInfo);
+        orderDao.insert(orderInfo);
         FlashSaleOrder flashSaleOrder = new FlashSaleOrder();
         flashSaleOrder.setGoodsId(goods.getId());
-        flashSaleOrder.setOrderId(orderId);
+        flashSaleOrder.setOrderId(orderInfo.getId());
         flashSaleOrder.setUserId(user.getId());
         orderDao.insertFlashSaleOrder(flashSaleOrder);
 
@@ -57,5 +57,10 @@ public class OrderService {
                 flashSaleOrder);
 
         return orderInfo;
+    }
+
+    public void deleteOrders() {
+        orderDao.deleteOrders();
+        orderDao.deleteFlashSaleOrders();
     }
 }

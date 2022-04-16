@@ -23,4 +23,7 @@ public interface GoodsDao {
     @Update(
             "update flashsale_goods set stock_count = stock_count - 1 where goods_id = #{goodsId} and stock_count > 0")
     public int reduceStock(FlashSaleGoods g);
+
+    @Update("update flashsale_goods set stock_count = #{stockCount} where goods_id = #{goodsId}")
+    public int resetStock(FlashSaleGoods g);
 }
